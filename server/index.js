@@ -1,11 +1,10 @@
 import express from "express";
 import connectDB from "./app/database.js";
 import dotenv from "dotenv";
-
+import app from "./app.js";
 dotenv.config({
   path: "env",
 });
-const app = express();
 connectDB()
   .then(() => {
     app.on("error", (error) => {
@@ -23,30 +22,3 @@ connectDB()
   .catch((error) => {
     console.log("mongoDb concection feiled", error);
   });
-
-
-
-
-
-// import mongoose from "mongoose";
-// import { DB_NAME } from "./app/constants";
-// import database from "./app/";
-
-// import express from 'express';
-
-// const app = express()
-// (async () => {
-//   try {
-//     await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
-//     app.on("error", (error)=>{
-//         console.log("Error",error)
-//         throw error
-//     })
-//     app.listen(process.env.PORT,()=>{
-//         console.log(`App is listening on port ${process.env.PORT}`)
-//     })
-//   } catch (error) {
-//     console.log("Error", error);
-//     throw error;
-//   }
-// })();
