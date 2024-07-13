@@ -1,1 +1,1 @@
-export const DB_NAME = "blogs"
+export const DB_NAME = "newsApplication"

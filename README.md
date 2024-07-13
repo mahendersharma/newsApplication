@@ -1,4 +1,4 @@
-creting News Aapplication 
+Creting News Aapplication 
 create completed backend & user InterFace And also add admin panel
 
 Backend:- Node.js Express.js 
@@ -12,5 +12,7 @@ user feature :-[read comments like or purches prime memberShip use payment gatwa
 
 
 
+
+Backend start :- npx nodemon dev
 
 git push -u origin main
