@@ -28,4 +28,4 @@ const uploadOnCloudnary = async (localFilePath) => {
 
 
 
-export default {uploadOnCloudnary}
+export {uploadOnCloudnary}
