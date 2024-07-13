@@ -29,6 +29,9 @@ const articleSchema = new mongoose.Schema(
         viewCount:{
             type: Number,
         },
+        like:{
+            type: Number,
+        },
         is_paid:{
             type:string,
             enum:['Paid','Free'],
