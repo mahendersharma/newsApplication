@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
     default: true,
   },
   refreshToken: {
-    type: Boolean,
+    type: String,
   },
   avatar: { type: String },
   created_at: { type: Date, default: Date.now },
