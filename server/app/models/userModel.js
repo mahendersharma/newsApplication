@@ -50,21 +50,21 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 userSchema.methods.genrateAccessToken = async function () {
-  return await jwt.sign(
+  return jwt.sign(
     {
-      _id: this._id,
-      email: this.email,
-      userName: this.userName,
-      name: this.name,
+        _id: this._id,
+        email: this.email,
+        username: this.username,
+        fullName: this.fullName
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY
     }
-  );
+)
 };
 userSchema.methods.genrateRefreshToken = async function () {
-    return await jwt.sign(
+    return jwt.sign(
         {
           _id: this._id,
         },

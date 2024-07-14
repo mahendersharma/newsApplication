@@ -18,7 +18,7 @@ const uploadOnCloudnary = async (localFilePath) => {
       resource_type: "auto",
     });
     //file has been upload successfully
-    console.log("File is uploaded cloudnary", res.url);
+    fs.unlinkSync(localFilePath)
     return res
   } catch (error) {
     fs.unlinkSync(localFilePath)// remove the loccaly saved temporary file as the upload
