@@ -8,7 +8,6 @@ router.post("/register",upload.fields([{name:'avatar',maxCount:1}]), registerUse
 router.post("/login-user", loginUser);
 
 // Secured Router
-// router.route('/logout').post(jwtVerify,logoutUser)
 router.post('/logout',jwtVerify, logoutUser)
 
 export default router

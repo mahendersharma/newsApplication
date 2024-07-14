@@ -10,7 +10,7 @@ const generateAccessAndRefereshTokens = async(userId) =>{
       const accessToken = user.genrateAccessToken()
       const refreshToken = user.genrateRefreshToken()
 
-      user.refresh_token = refreshToken
+      user.refreshToken = refreshToken
       await user.save({ validateBeforeSave: false })
 
       console.log("accessToken",accessToken)
@@ -106,6 +106,7 @@ const loginUser = asyncHandler(async (req, res) =>{
 
  const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
 
+ console.log(accessToken,refreshToken)
   const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
   const options = {
@@ -139,7 +140,7 @@ const logoutUser = asyncHandler(async(req, res) => {
       req.user._id,
       {
           $unset: {
-              refresh_token: 1 // this removes the field from document
+            refreshToken: 1 // this removes the field from document
           }
       },
       {
