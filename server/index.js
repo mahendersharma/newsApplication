@@ -15,7 +15,7 @@ connectDB()
       console.log(`Server Is runing localhost:${process.env.PORT}`);
     });
     app.on("error", (error) => {
-      console.log("Error", error);
+      console.log("Errors", error);
       throw error;
     });
   })

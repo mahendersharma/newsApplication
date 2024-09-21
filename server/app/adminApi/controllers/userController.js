@@ -25,6 +25,7 @@ const generateAccessAndRefereshTokens = async (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontent for uses register
+  console.log("hello",req.body)
   const { name, email, password, userName } = req.body || {};
   if ([name, email, password, userName].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All Field are required");
@@ -71,51 +72,48 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  // req body -> data
-  // username or email
-  //find the user
-  //password check
-  //access and referesh token
-  //send cookie
+  console.log("hello", req.body);
 
-  const { email, username, password } = req.body;
+  const { email, userName, password } = req.body; // Changed username to userName
 
-  if (!username && !email) {
-    throw new ApiError(400, "username or email is required");
+  // Validate input: either userName or email is required
+  if (!userName && !email) {
+    throw new ApiError(400, "User name or email is required");
   }
 
-  // if (!(username || email)) {
-  //     throw new ApiError(400, "username or email is required")
+  console.log("Searching for user with:", { userName, email });
 
-  // }
-
+  // Find the user by either userName or email
   const user = await User.findOne({
-    $or: [{ username }, { email }],
+    $or: [{ userName }, { email }],
   });
 
+  // Check if user exists
   if (!user) {
+    console.log("User not found with:", { userName, email });
     throw new ApiError(404, "User does not exist");
   }
 
+  // Validate password
   const isPasswordValid = await user.isPasswordCorrect(password);
-
   if (!isPasswordValid) {
+    console.log("Password mismatch for user:", user.userName || user.email);
     throw new ApiError(401, "Invalid user credentials");
   }
 
-  const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
-    user._id
-  );
+  // Generate access and refresh tokens
+  const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
 
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
+  // Select user fields to return (excluding password and refresh token)
+  const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
+  // Cookie options
   const options = {
-    httpOnly: true,
-    secure: true,
+    httpOnly: true, // Prevents client-side access to the cookie
+    secure: true,   // Ensure cookies are sent over HTTPS
   };
 
+  // Send response with cookies and user info
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -128,10 +126,13 @@ const loginUser = asyncHandler(async (req, res) => {
           accessToken,
           refreshToken,
         },
-        "User logged In Successfully"
+        "User logged in successfully"
       )
     );
 });
+
+
+
 
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
