@@ -24,7 +24,7 @@ const closeRoom = async (room) => {
 // Schedule the room creation and closure
 let currentRoom;
 
-cron.schedule('0 */3 * * *', async () => {
+cron.schedule('* * * * *', async () => {
     console.log('Cron job triggered...');
 
     try {
