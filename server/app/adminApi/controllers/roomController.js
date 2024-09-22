@@ -58,6 +58,9 @@ const createRoom = asyncHandler(async (req, res) => {
   
   // Activate a room
   const activateRoom = async (req, res) => {
+    res.setHeader('Cache-Control', 'no-store'); // Prevents caching at all levels
+    res.setHeader('Pragma', 'no-cache'); // HTTP/1.0 backward compatibility
+    res.setHeader('Expires', '0'); // Ensures immediate expiration
     try {
         const rooms = await Room.find({ status: 'open' });
         const roomDetails = rooms.map(room => ({
