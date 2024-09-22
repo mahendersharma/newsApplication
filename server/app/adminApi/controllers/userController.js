@@ -72,8 +72,6 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  console.log("hello", req.body);
-
   const { email, userName, password } = req.body; // Changed username to userName
 
   // Validate input: either userName or email is required

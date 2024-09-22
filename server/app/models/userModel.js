@@ -31,6 +31,14 @@ const userSchema = new mongoose.Schema({
   refreshToken: {
     type: String,
   },
+  balance:{
+    type: Number, // Keeps track of user's balance
+    default: 1000
+  },
+  wins: {
+    type: Number, // Keeps track of user's wins
+    default: 0
+  },
   avatar: { type: String },
   created_at: { type: Date, default: Date.now },
   created_by: String,
@@ -46,7 +54,6 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
-  console.log("password",this.password)
   return await bcrypt.compare(password, this.password);
 };
 
@@ -56,7 +63,9 @@ userSchema.methods.genrateAccessToken =  function () {
         _id: this._id,
         email: this.email,
         userName: this.userName,
-        fullName: this.fullName
+        name: this.name,
+        phone: this.phone,
+        balance: this.balance
     },
     process.env.ACCESS_TOKEN_SECRET,
     {

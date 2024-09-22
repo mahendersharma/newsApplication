@@ -3,7 +3,7 @@ import cors from 'cors'
 import cookieParser from "cookie-parser";
 import adminApiRoutes from './app/adminApi/routes/index.js'
  const app = express();
-
+ import './app/cron/roomCron.js'; 
 app.use(cors({
     origin:process.env.CORS_ORIGIN,
     credentials:true
