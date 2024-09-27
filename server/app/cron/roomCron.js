@@ -1,4 +1,3 @@
-
 import cron from 'node-cron';
 import Room from '../models/roomModel.js';
 
@@ -22,30 +21,29 @@ const closeRoom = async (room) => {
     console.log(`Room closed: ${room.roomId}`);
 };
 
-// Schedule the room creation and closure
-let currentRoom;
-
-// Function to handle the room lifecycle
+// Function to handle the lifecycle of the room
 const handleRoomLifecycle = async () => {
     console.log('Handling room lifecycle...');
-
-    // Close the current room if it exists
-    if (currentRoom) {
-        console.log(`Closing the current room: ${currentRoom.roomId}`);
-        await closeRoom(currentRoom);
-        
-        // Wait for 10 seconds after closing before creating a new room
-        await new Promise(resolve => setTimeout(resolve, 10000));
-    }
-
     // Create a new room
-    currentRoom = await createRoom();
+    const newRoom = await createRoom();
+
+    // Wait for 1 minute and 50 seconds
+    await new Promise(resolve => setTimeout(resolve, 110000)); // 1 minute and 50 seconds
+
+    // Close the room and provide results
+    await closeRoom(newRoom);
+
+    // Here you can add logic to provide results to the participants, if needed
+    console.log(`Results for room ${newRoom.roomId}: Lottery Number was ${newRoom.lotteryNumber}`);
+
+    // Wait for 10 seconds before creating the next room
+    await new Promise(resolve => setTimeout(resolve, 10000)); // 10 seconds
 };
 
-// Start the process
-cron.schedule('*/2 * * * *', async () => { // Every 2 minutes
+// Schedule the room lifecycle every 2 minutes
+cron.schedule('*/2 * * * *', async () => {
     console.log('Cron job triggered...');
-    
+
     try {
         await handleRoomLifecycle();
     } catch (error) {
@@ -53,11 +51,7 @@ cron.schedule('*/2 * * * *', async () => { // Every 2 minutes
     }
 });
 
-// Close room after 1 minute and 50 seconds
-setInterval(async () => {
-    if (currentRoom) {
-        console.log(`Closing the room: ${currentRoom.roomId} in 1 minute and 50 seconds...`);
-        await new Promise(resolve => setTimeout(resolve, 110000)); // Wait for 1 minute and 50 seconds
-        await closeRoom(currentRoom);
-    }
-}, 120000); // This will run every 2 minutes, but only one will execute at a time
+// Initial room creation to kickstart the process
+(async () => {
+    await handleRoomLifecycle(); // Start the first room immediately
+})();
