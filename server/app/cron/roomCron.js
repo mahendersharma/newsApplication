@@ -6,7 +6,8 @@ const createRoom = async () => {
     const roomId = `Room-${Date.now()}`; // Unique room ID based on current timestamp
     const newRoom = await Room.create({
         roomId,
-        status: 'open'
+        status: 'open',
+        endTime: new Date(Date.now() + (2 * 60 * 1000)) // Set end time to 2 minutes from now
     });
     console.log("roomId",roomId)
     await newRoom.generateLotteryNumber(); // Generate a random lottery number
@@ -24,20 +25,25 @@ const closeRoom = async (room) => {
 // Schedule the room creation and closure
 let currentRoom;
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('*/2 * * * *', async () => { // Runs every 2 minutes
     console.log('Cron job triggered...');
 
     try {
-        // Close the current room if it exists
+        // Close the current room if it exists and time is up
         if (currentRoom) {
-            console.log(`Closing the current room: ${currentRoom.roomId}`);
-            await closeRoom(currentRoom);
-            // Wait for 10 seconds before creating a new room
-            await new Promise(resolve => setTimeout(resolve, 10000));
+            const remainingTime = currentRoom.getRemainingTime();
+            if (remainingTime <= 0) {
+                console.log(`Closing the current room: ${currentRoom.roomId}`);
+                await closeRoom(currentRoom);
+                // Wait for 10 seconds before creating a new room
+                await new Promise(resolve => setTimeout(resolve, 10000));
+            }
         }
 
-        // Create a new room
-        currentRoom = await createRoom();
+        // Create a new room if the previous one is closed or not yet created
+        if (!currentRoom || currentRoom.status === 'closed') {
+            currentRoom = await createRoom();
+        }
     } catch (error) {
         console.error('Error in cron job:', error);
     }

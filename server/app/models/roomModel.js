@@ -47,12 +47,21 @@ roomSchema.methods.generateLotteryNumber = async function() {
   return await this.save();
 };
 
+// Method to calculate remaining time before the room closes
 roomSchema.methods.getRemainingTime = function() {
   const now = Date.now();
-  const endTime = this.createdAt.getTime() + (3 * 60 * 60 * 1000); // 3 hours in milliseconds
+  const endTime = this.endTime || (this.createdAt.getTime() + (2 * 60 * 1000)); // Default to 2 minutes if endTime not set
   const remainingTime = Math.max(0, endTime - now);
   return remainingTime;
 };
+
+// Pre-save hook to set endTime when a new room is created
+roomSchema.pre('save', function(next) {
+  if (this.isNew) {
+    this.endTime = new Date(Date.now() + (2 * 60 * 1000)); // Set end time to 2 minutes from now
+  }
+  next();
+});
 
 
 export default mongoose.model("Room", roomSchema, "Rooms");
