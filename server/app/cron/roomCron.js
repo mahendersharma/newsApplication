@@ -1,3 +1,4 @@
+
 import cron from 'node-cron';
 import Room from '../models/roomModel.js';
 
@@ -8,10 +9,10 @@ const createRoom = async () => {
         roomId,
         status: 'open'
     });
-    console.log("roomId",roomId)
+    console.log("roomId", roomId);
     await newRoom.generateLotteryNumber(); // Generate a random lottery number
     console.log(`New room created: ${newRoom.roomId} with lottery number: ${newRoom.lotteryNumber}`);
-    
+
     return newRoom;
 };
 
@@ -24,24 +25,39 @@ const closeRoom = async (room) => {
 // Schedule the room creation and closure
 let currentRoom;
 
-cron.schedule('* * * * *', async () => {
+// Function to handle the room lifecycle
+const handleRoomLifecycle = async () => {
+    console.log('Handling room lifecycle...');
+
+    // Close the current room if it exists
+    if (currentRoom) {
+        console.log(`Closing the current room: ${currentRoom.roomId}`);
+        await closeRoom(currentRoom);
+        
+        // Wait for 10 seconds after closing before creating a new room
+        await new Promise(resolve => setTimeout(resolve, 10000));
+    }
+
+    // Create a new room
+    currentRoom = await createRoom();
+};
+
+// Start the process
+cron.schedule('*/2 * * * *', async () => { // Every 2 minutes
     console.log('Cron job triggered...');
-
+    
     try {
-        // Close the current room if it exists
-        if (currentRoom) {
-            console.log(`Closing the current room: ${currentRoom.roomId}`);
-            await closeRoom(currentRoom);
-            // Wait for 10 seconds before creating a new room
-            await new Promise(resolve => setTimeout(resolve, 10000));
-        }
-
-        // Create a new room
-        currentRoom = await createRoom();
+        await handleRoomLifecycle();
     } catch (error) {
         console.error('Error in cron job:', error);
     }
 });
 
-// Optionally: You can set a listener to handle when a room is closed
-// You can also implement additional logic to handle user participation in rooms
+// Close room after 1 minute and 50 seconds
+setInterval(async () => {
+    if (currentRoom) {
+        console.log(`Closing the room: ${currentRoom.roomId} in 1 minute and 50 seconds...`);
+        await new Promise(resolve => setTimeout(resolve, 110000)); // Wait for 1 minute and 50 seconds
+        await closeRoom(currentRoom);
+    }
+}, 120000); // This will run every 2 minutes, but only one will execute at a time
